@@ -1,0 +1,30 @@
+name: Compile CheatMC
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install NDK
+      run: |
+        wget https://dl.google.com/android/repository/android-ndk-r26d-linux.zip
+        unzip android-ndk-r26d-linux.zip
+        echo "NDK=$PWD/android-ndk-r26d" >> $GITHUB_ENV
+    
+    - name: Compile
+      run: |
+        cd ${{ github.workspace }}
+        $NDK/ndk-build
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libcheatmc
+        path: libs/arm64-v8a/libcheatmc.so
